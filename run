@@ -4,6 +4,21 @@ set -o errexit
 set -o xtrace
 set -o nounset
 
+# get a version and exit.
+if [ $1 = 'version' ]; then
+  VERDIR=$2
+  CMD=`egrep ^version: /usr/local/bin/Procfile | cut -f 2 -d ':'`
+  trap `${CMD} 1> /dev/null 2> ${VERDIR}/version ; echo $?`
+  IFS=$'\n'
+  RES=`cat ${VERDIR}/version`
+  for line in ${RES}; do
+    if [[ ${line} =~ ^(Version) ]]; then
+        `echo ${line} > $2/version`
+    fi
+  done
+  exit 0
+fi
+
 # Source reads
 READS1=$2
 READS2=$3
